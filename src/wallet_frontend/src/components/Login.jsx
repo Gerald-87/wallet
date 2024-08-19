@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
-import { wallet_backend } from 'declarations/wallet_backend';
+import { wallet_backend } from '../../../declarations/wallet_backend';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (event) => {
@@ -14,44 +15,40 @@ const Login = () => {
     if (isLoading) return;
 
     setIsLoading(true);
+    setError("");
+
     try {
       console.log("Attempting login with email:", email);
       
-      // Call the backend login function
       const result = await wallet_backend.login(email, password);
       console.log("Login result:", result);
 
       if ("ok" in result) {
         console.log("Login successful");
-        const { role } = result.ok;
+        const [userId, fullName, role] = result.ok;
 
-        // Store the user role in localStorage or state management as needed
-        localStorage.setItem("userRole", role);
+        localStorage.setItem("userId", userId);
+        localStorage.setItem("fullName", fullName);
+        localStorage.setItem("userRole", JSON.stringify(role));
 
-        // Navigate based on role
-        switch (role) {
-          case "Admin":
-            navigate("/dashboard");
-            break;
-          case "Customer":
-            navigate("/customer");
-            break;
-          case "Agent":
-            navigate("/agent");
-            break;
-          default:
-            navigate("/"); // Redirect to a default page if role is unknown
-            break;
+        if ("Admin" in role) {
+          navigate("/dashboard");
+        } else if ("Customer" in role) {
+          navigate("/customer");
+        } else if ("Agent" in role) {
+          navigate("/agent");
+        } else {
+          navigate("/");
         }
       } else {
         console.log("Login failed:", result.err);
-        alert(result.err); // Display error message from backend
+        setError(result.err);
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("An error occurred during login. Please try again."); // Handle unexpected errors
+      setError("An error occurred during login. Please try again.");
     } finally {
-      setIsLoading(false); // Reset loading state after processing
+      setIsLoading(false);
     }
   };
 
@@ -86,6 +83,7 @@ const Login = () => {
           <button type="submit" className="btn btn-primary" disabled={isLoading}>
             {isLoading ? "Logging in..." : "Login"}
           </button>
+          {error && <p className="error">{error}</p>}
           <div className="login">
             <p>Don't have an Account?</p>
             <Link to="/Register" type="button" className="btn btn-success">
