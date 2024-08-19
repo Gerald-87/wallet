@@ -16,7 +16,7 @@ const Sidebar = () => (
     <ul>
       <li><a href="#dashboard">Dashboard</a></li>
       <li><a href="#withdraw">Withdraw</a></li>
-      <li><a href="#withdraw">Transfer</a></li>
+      <li><a href="#transfer">Transfer</a></li>
       <li><a href="#pay-bills">Pay Bills</a></li>
       <li><a href="#profile">Profile</a></li>
       <li><a href="#logout">Logout</a></li>
@@ -34,10 +34,10 @@ const Card = ({ currency, balance }) => (
 
 const CurrencyCards = () => (
   <div className="currency-cards">
-    <Card currency="ZMW" balance="10,000 ZMW" />
-    <Card currency="USD" balance="1,000 USD" />
-    <Card currency="EUR" balance="800 EUR" />
-    <Card currency="GBP" balance="700 GBP" />
+    <Card currency="Zambian Kwacha (ZMW)" balance="10,000 ZMW" />
+    <Card currency="USD Dollar (USD)" balance="1,000 USD" />
+    <Card currency="Malawian Kwacha (MWK)" balance="8,000 MWK" />
+    <Card currency="Zimbabwean Dollar (ZWL)" balance="5,000 ZWL" />
   </div>
 );
 
@@ -73,14 +73,14 @@ const TransactionHistory = () => (
           <td>2024-07-25</td>
           <td>Pay Bills</td>
           <td>100</td>
-          <td>EUR</td>
+          <td>MWK</td>
           <td>Completed</td>
         </tr>
         <tr>
           <td>2024-07-20</td>
           <td>Deposit</td>
           <td>300</td>
-          <td>GBP</td>
+          <td>ZWL</td>
           <td>Completed</td>
         </tr>
       </tbody>
