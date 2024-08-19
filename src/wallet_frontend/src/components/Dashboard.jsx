@@ -29,20 +29,20 @@ const Sidebar = ({ onLogout }) => (
   </div>
 );
 
-const Card = ({ currency, balance }) => (
+const Card = ({ currency, balance, onExchange }) => (
   <div className="card">
     <h3>{currency}</h3>
     <p>Balance: {balance.toFixed(2)}</p>
-    {/* Exchange button removed */}
+    <button onClick={() => onExchange(currency)}>Exchange</button>
   </div>
 );
 
-const CurrencyCards = ({ balances }) => (
+const CurrencyCards = ({ balances, onExchange }) => (
   <div className="currency-cards">
-    <Card currency="Zambian Kwacha (ZMW)" balance={balances.zambianKwacha} />
-    <Card currency="USD Dollar (USD)" balance={balances.usDollar} />
-    <Card currency="Malawian Kwacha (MWK)" balance={balances.malawianKwacha} />
-    <Card currency="Zimbabwean Dollar (ZWL)" balance={balances.zimbabweanDollar} />
+    <Card currency="Zambian Kwacha (ZMW)" balance={balances.zambianKwacha} onExchange={onExchange} />
+    <Card currency="USD Dollar (USD)" balance={balances.usDollar} onExchange={onExchange} />
+    <Card currency="Malawian Kwacha (MWK)" balance={balances.malawianKwacha} onExchange={onExchange} />
+    <Card currency="Zimbabwean Dollar (ZWL)" balance={balances.zimbabweanDollar} onExchange={onExchange} />
   </div>
 );
 
@@ -176,9 +176,7 @@ const Dashboard = () => {
       <Navbar fullName={fullName} />
       <Sidebar onLogout={handleLogout} />
       <div className="dashboard-content">
-      
-        
-        <CurrencyCards balances={balances} />
+        <CurrencyCards balances={balances} onExchange={handleExchange} />
         <TransactionHistory />
       </div>
     </div>
