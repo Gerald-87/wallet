@@ -173,7 +173,6 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <Navbar fullName={fullName} />
       <Sidebar onLogout={handleLogout} />
       <div className="dashboard-content">
         <h1>Welcome, {fullName}!</h1>
