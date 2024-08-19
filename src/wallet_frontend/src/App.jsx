@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import "./App.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { wallet_backend } from 'declarations/wallet_backend';
 import Register from './components/Register';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
