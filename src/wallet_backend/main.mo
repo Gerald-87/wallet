@@ -71,19 +71,18 @@ actor {
     private var zimbabweanDollarBalance : Float = stableZimbabweanDollarBalance;
     private var usDollarBalance : Float = stableUsDollarBalance;
 
-    // Exchange rates (as of July 2024, approximate)
-     // Exchange rates
+    // Exchange rates 
     let exchangeRates = {
         zambianToMalawian = 46.37;
         zambianToZimbabwean = 914.85;
         zambianToUSD = 0.044;
-        malawianToKwacha = 0.022;
+        malawianToZambian = 0.022;
         malawianToZimbabwean = 19.73;
         malawianToUSD = 0.00095;
-        zimbabweanToKwacha = 0.0011;
+        zimbabweanToZambian = 0.0011;
         zimbabweanToMalawian = 0.051;
         zimbabweanToUSD = 0.000048;
-        usdToKwacha = 22.73;
+        usdToZambian = 22.73;
         usdToMalawian = 1053.74;
         usdToZimbabwean = 20833.33;
     };
@@ -152,93 +151,79 @@ actor {
         };
     };
 
-    // For Zambian Kwacha to other currencies
-public func exchangeZambianKwachaToOtherCurrencies(currency : Currency, amount : Float) : async Float {
-    var exchangedAmount = 0.0;
-    switch (currency) {
-        case (#MalawianKwacha) {
-            exchangedAmount := amount * exchangeRates.zambianToMalawian;
-        };
-        case (#ZimbabweanDollar) {
-            exchangedAmount := amount * exchangeRates.zambianToZimbabwean;
-        };
-        case (#USDollar) {
-            exchangedAmount := amount * exchangeRates.zambianToUSD;
-        };
-        case (_) {
-            return 0.0; // Unsupported currency types
-        };
-    };
+    public shared func exchangeCurrency(userId : Text, fromCurrency : Currency, toCurrency : Currency, amount : Float) : async Result.Result<Float, Text> {
+        switch (users.get(userId)) {
+            case null { #err("User not found") };
+            case (?user) {
+                var exchangedAmount : Float = 0.0;
 
-    return exchangedAmount;
-};
+                func updateBalance(currency : Currency, delta : Float) {
+                    switch (currency) {
+                        case (#ZambianKwacha) {
+                            user.zambianKwachaBalance += delta;
+                            zambianKwachaBalance += delta;
+                        };
+                        case (#MalawianKwacha) {
+                            user.malawianKwachaBalance += delta;
+                            malawianKwachaBalance += delta;
+                        };
+                        case (#ZimbabweanDollar) {
+                            user.zimbabweanDollarBalance += delta;
+                            zimbabweanDollarBalance += delta;
+                        };
+                        case (#USDollar) {
+                            user.usDollarBalance += delta;
+                            usDollarBalance += delta;
+                        };
+                    };
+                };
 
-// For Malawian Kwacha to other currencies
-public func exchangeMalawianKwachaToOtherCurrencies(currency : Currency, amount : Float) : async Float {
-    var exchangedAmount = 0.0;
-    switch (currency) {
-        case (#ZambianKwacha) {
-            exchangedAmount := amount * exchangeRates.malawianToKwacha;
-        };
-        case (#ZimbabweanDollar) {
-            exchangedAmount := amount * exchangeRates.malawianToZimbabwean;
-        };
-        case (#USDollar) {
-            exchangedAmount := amount * exchangeRates.malawianToUSD;
-        };
-        case (_) {
-            return 0.0; // Unsupported currency types
-        };
-    };
-    return exchangedAmount;
-};
+                switch (fromCurrency, toCurrency) {
+                    case (#ZambianKwacha, #MalawianKwacha) {
+                        exchangedAmount := amount * exchangeRates.zambianToMalawian;
+                    };
+                    case (#ZambianKwacha, #ZimbabweanDollar) {
+                        exchangedAmount := amount * exchangeRates.zambianToZimbabwean;
+                    };
+                    case (#ZambianKwacha, #USDollar) {
+                        exchangedAmount := amount * exchangeRates.zambianToUSD;
+                    };
+                    case (#MalawianKwacha, #ZambianKwacha) {
+                        exchangedAmount := amount * exchangeRates.malawianToZambian;
+                    };
+                    case (#MalawianKwacha, #ZimbabweanDollar) {
+                        exchangedAmount := amount * exchangeRates.malawianToZimbabwean;
+                    };
+                    case (#MalawianKwacha, #USDollar) {
+                        exchangedAmount := amount * exchangeRates.malawianToUSD;
+                    };
+                    case (#ZimbabweanDollar, #ZambianKwacha) {
+                        exchangedAmount := amount * exchangeRates.zimbabweanToZambian;
+                    };
+                    case (#ZimbabweanDollar, #MalawianKwacha) {
+                        exchangedAmount := amount * exchangeRates.zimbabweanToMalawian;
+                    };
+                    case (#ZimbabweanDollar, #USDollar) {
+                        exchangedAmount := amount * exchangeRates.zimbabweanToUSD;
+                    };
+                    case (#USDollar, #ZambianKwacha) {
+                        exchangedAmount := amount * exchangeRates.usdToZambian;
+                    };
+                    case (#USDollar, #MalawianKwacha) {
+                        exchangedAmount := amount * exchangeRates.usdToMalawian;
+                    };
+                    case (#USDollar, #ZimbabweanDollar) {
+                        exchangedAmount := amount * exchangeRates.usdToZimbabwean;
+                    };
+                    case (_) { return #err("Unsupported currency exchange") };
+                };
 
-    // Function for currency exchange: Zimbabwean Dollar to other currencies
-    public func exchangeZimbabweanDollarToOtherCurrencies(currency : Currency, amount : Float) : async Float {
-        var exchangedAmount = 0.0;
-        switch (currency) {
-            case (#ZambianKwacha) {
-                exchangedAmount := amount * exchangeRates.zimbabweanToKwacha;
-        
-            };
-            case (#MalawianKwacha) {
-                exchangedAmount := amount * exchangeRates.zimbabweanToMalawian;
-                
-            };
-            case (#USDollar) {
-                exchangedAmount := amount * exchangeRates.zimbabweanToUSD;
-                
-            };
-            case (_) {
-                return 0.0; // Unsupported currency types
+                updateBalance(fromCurrency, -amount);
+                updateBalance(toCurrency, exchangedAmount);
+
+                #ok(exchangedAmount);
             };
         };
-
-        return exchangedAmount;
-    };
-
-    // Function for currency exchange: US Dollar to other currencies
-    public func exchangeUSDollarToOtherCurrencies(currency : Currency, amount : Float) : async Float {
-        var exchangedAmount = 0.0;
-        switch (currency) {
-            case (#ZambianKwacha) {
-                exchangedAmount := amount * exchangeRates.usdToKwacha;
-                
-            };
-            case (#MalawianKwacha) {
-                exchangedAmount := amount * exchangeRates.usdToMalawian;
-                
-            };
-            case (#ZimbabweanDollar) {
-                exchangedAmount := amount * exchangeRates.usdToZimbabwean;
-                
-            };
-            case (_) {
-                return 0.0; // Unsupported currency types
-            };
-        };
-
-        return exchangedAmount;
     };
 
     public shared func payBill(userId : Text, billType : BillType, currency : Currency, amount : Float) : async Result.Result<Text, Text> {

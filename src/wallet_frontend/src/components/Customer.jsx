@@ -138,43 +138,44 @@ const Customer = () => {
   }, [userId]);
 
   const handleExchange = async (fromCurrency) => {
-    const toCurrency = prompt('Enter target currency (ZMW, USD, MWK, ZWL):');
+    const toCurrency = prompt('Enter target currency (ZMW, USD, MWK, ZWL):').trim();
     const amount = parseFloat(prompt('Enter amount to exchange:'));
 
-    if (!amount || isNaN(amount) || amount <= 0) {
-      alert('Invalid amount.');
-      return;
+    if (isNaN(amount) || amount <= 0) {
+        alert('Invalid amount.');
+        return;
     }
 
     const currencyMap = {
-      'Zambian Kwacha (ZMW)': 'zambianKwacha',
-      'USD Dollar (USD)': 'usDollar',
-      'Malawian Kwacha (MWK)': 'malawianKwacha',
-      'Zimbabwean Dollar (ZWL)': 'zimbabweanDollar'
+        'ZMW': 'zambianKwacha',
+        'USD': 'usDollar',
+        'MWK': 'malawianKwacha',
+        'ZWL': 'zimbabweanDollar'
     };
 
     if (!currencyMap[toCurrency]) {
-      alert('Invalid currency.');
-      return;
+        alert('Invalid currency.');
+        return;
     }
 
     try {
-      const response = await wallet_backend.convertCurrency(userId, fromCurrency, toCurrency, amount);
-      if ('ok' in response) {
-        setBalances(prevBalances => ({
-          ...prevBalances,
-          [currencyMap[fromCurrency]]: prevBalances[currencyMap[fromCurrency]] - amount,
-          [currencyMap[toCurrency]]: prevBalances[currencyMap[toCurrency]] + amount,
-        }));
-        alert('Currency exchanged successfully.');
-      } else {
-        alert('Currency exchange failed.');
-      }
+        const response = await wallet_backend.exchangeCurrency(userId, fromCurrency, toCurrency, amount);
+        console.log('Exchange response:', response); // Debug log
+        if (response.ok) {
+            setBalances(prevBalances => ({
+                ...prevBalances,
+                [currencyMap[fromCurrency]]: prevBalances[currencyMap[fromCurrency]] - amount,
+                [currencyMap[toCurrency]]: prevBalances[currencyMap[toCurrency]] + response.exchangedAmount,
+            }));
+            alert('Currency exchanged successfully.');
+        } else {
+            alert('Currency exchange failed.');
+        }
     } catch (error) {
-      console.error('Error exchanging currency:', error);
-      alert('An error occurred while exchanging currency.');
+        console.error('Error exchanging currency:', error);
+        alert('An error occurred while exchanging currency.');
     }
-  };
+};
 
   const handleLogout = () => {
     localStorage.removeItem('userId');
