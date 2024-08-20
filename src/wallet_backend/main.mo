@@ -51,6 +51,28 @@ actor {
         #UnsupportedCurrency;
     };
 
+     type Commission = {
+        date: Int; 
+        time: Text; 
+        amount: Float;
+        currency: Currency;
+    };
+
+    type TransactionHistory = {
+    date: Int; 
+    description: Text; 
+    currency: Currency; 
+    status: {#Completed;
+    #Pending}; 
+    
+    };
+    type TotalUser = {
+    fullName: Text; 
+    role: {#Admin; 
+    #Customer;
+    #Agent};   
+};
+
     private stable var usersEntries : [(Text, User)] = [];
     private stable var accountNumberToUserEntries : [(Text, Text)] = [];
     private stable var emailToUserEntries : [(Text, Text)] = [];
