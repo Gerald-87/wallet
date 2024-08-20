@@ -17,11 +17,9 @@ const Sidebar = ({ onLogout }) => (
     <div className="logo">Dashboard</div>
     <ul>
       <li><a href="#dashboard">Dashboard</a></li>
-      <li><a href="#withdraw">Deposit</a></li>
       <li><a href="#pay-bills">Withdraw</a></li>
       <li><a href="#transfer">Transfer</a></li>
       <li><a href="#pay-bills">Pay Bills</a></li>
-      <li><a href="#profile">Profile</a></li>
       <li><a href="#logout" onClick={onLogout}>Logout</a></li>
     </ul>
   </div>
