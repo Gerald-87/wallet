@@ -23,7 +23,7 @@ const Sidebar = ({ onLogout }) => (
       <li><a href="#pay-bills">Pay Bills</a></li>
       <li><a href="#customer">Customers</a></li>
       <li><a href="#agent">Agents</a></li>
-      <li><a href="#logout" onClick={onLogout}>Logout</a></li>
+      <li><a href="/" onClick={onLogout}>Logout</a></li>
     </ul>
   </div>
 );
@@ -136,8 +136,10 @@ const Dashboard = () => {
       }
     };
 
-    fetchUserData();
-    fetchAccountNumber();
+    if (userId) {
+      fetchUserData();
+      fetchAccountNumber();
+    }
   }, [userId]);
 
   const handleExchange = async (fromCurrency) => {
@@ -150,28 +152,40 @@ const Dashboard = () => {
     }
 
     const currencyMap = {
-      'Zambian Kwacha (ZMW)': 'zambianKwacha',
-      'USD Dollar (USD)': 'usDollar',
-      'Malawian Kwacha (MWK)': 'malawianKwacha',
-      'Zimbabwean Dollar (ZWL)': 'zimbabweanDollar'
+      'Zambian Kwacha (ZMW)': 'ZMW',
+      'USD Dollar (USD)': 'USD',
+      'Malawian Kwacha (MWK)': 'MWK',
+      'Zimbabwean Dollar (ZWL)': 'ZWL'
     };
 
-    if (!currencyMap[toCurrency]) {
-      alert('Invalid currency.');
+    const fromCurrencyCode = currencyMap[fromCurrency];
+    const toCurrencyCode = currencyMap[toCurrency];
+
+    if (!fromCurrencyCode) {
+      alert(`Invalid source currency: ${fromCurrency}`);
+      console.error('Invalid source currency:', fromCurrency);
+      return;
+    }
+
+    if (!toCurrencyCode) {
+      alert(`Invalid target currency: ${toCurrency}`);
+      console.error('Invalid target currency:', toCurrency);
       return;
     }
 
     try {
-      const response = await wallet_backend.convertCurrency(userId, fromCurrency, toCurrency, amount);
+      const response = await wallet_backend.exchangeCurrency(userId, fromCurrencyCode, toCurrencyCode, amount);
+      
       if ('ok' in response) {
+        const exchangedAmount = response.ok;
         setBalances(prevBalances => ({
           ...prevBalances,
-          [currencyMap[fromCurrency]]: prevBalances[currencyMap[fromCurrency]] - amount,
-          [currencyMap[toCurrency]]: prevBalances[currencyMap[toCurrency]] + amount,
+          [fromCurrencyCode]: prevBalances[fromCurrencyCode] - amount,
+          [toCurrencyCode]: prevBalances[toCurrencyCode] + exchangedAmount,
         }));
         alert('Currency exchanged successfully.');
       } else {
-        alert('Currency exchange failed.');
+        alert('Currency exchange failed: ' + response.err);
       }
     } catch (error) {
       console.error('Error exchanging currency:', error);
