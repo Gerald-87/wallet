@@ -14,16 +14,15 @@ const Navbar = ({ fullName }) => (
 
 const Sidebar = ({ onLogout }) => (
   <div className="sidebar">
+    <div className="logo">Dashboard</div>
     <ul>
       <li><a href="#dashboard">Dashboard</a></li>
-      <li><a href="#smart-wallet">Smart Wallet</a></li>
       <li><a href="#deposit">Deposit</a></li>
       <li><a href="#withdraw">Withdraw</a></li>
       <li><a href="#transfer">Transfer</a></li>
-      <li><a href="#agents">Agents</a></li>
-      <li><a href="#customers">Customers</a></li>
       <li><a href="#pay-bills">Pay Bills</a></li>
-      <li><a href="#profile">Profile</a></li>
+      <li><a href="#customer">Customers</a></li>
+      <li><a href="#agent">Agents</a></li>
       <li><a href="#logout" onClick={onLogout}>Logout</a></li>
     </ul>
   </div>
@@ -67,7 +66,27 @@ const TransactionHistory = () => (
           <td>USD</td>
           <td>Completed</td>
         </tr>
-        {/* Add more transaction rows as needed */}
+        <tr>
+          <td>2024-07-30</td>
+          <td>Withdraw</td>
+          <td>200</td>
+          <td>ZMW</td>
+          <td>Pending</td>
+        </tr>
+        <tr>
+          <td>2024-07-25</td>
+          <td>Pay Bills</td>
+          <td>100</td>
+          <td>MWK</td>
+          <td>Completed</td>
+        </tr>
+        <tr>
+          <td>2024-07-20</td>
+          <td>Deposit</td>
+          <td>300</td>
+          <td>ZWL</td>
+          <td>Completed</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -137,47 +156,44 @@ const Dashboard = () => {
       'Zimbabwean Dollar (ZWL)': 'zimbabweanDollar'
     };
 
-    if (!currencyMap[fromCurrency] || !currencyMap[toCurrency]) {
-      alert('Unsupported currency.');
+    if (!currencyMap[toCurrency]) {
+      alert('Invalid currency.');
       return;
     }
 
     try {
-      const result = await wallet_backend.exchangeCurrency(
-        userId,
-        currencyMap[fromCurrency],
-        currencyMap[toCurrency],
-        amount
-      );
-
-      if ('ok' in result) {
-        alert(`Exchanged successfully: ${amount} ${fromCurrency} to ${result.ok} ${toCurrency}`);
-        setBalances((prevBalances) => ({
+      const response = await wallet_backend.convertCurrency(userId, fromCurrency, toCurrency, amount);
+      if ('ok' in response) {
+        setBalances(prevBalances => ({
           ...prevBalances,
           [currencyMap[fromCurrency]]: prevBalances[currencyMap[fromCurrency]] - amount,
-          [currencyMap[toCurrency]]: prevBalances[currencyMap[toCurrency]] + result.ok,
+          [currencyMap[toCurrency]]: prevBalances[currencyMap[toCurrency]] + amount,
         }));
+        alert('Currency exchanged successfully.');
       } else {
-        alert(`Exchange failed: ${result.err}`);
+        alert('Currency exchange failed.');
       }
     } catch (error) {
-      console.error('Error during exchange:', error);
-      alert('Error during exchange');
+      console.error('Error exchanging currency:', error);
+      alert('An error occurred while exchanging currency.');
     }
   };
 
   const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/';
+    localStorage.removeItem('userId');
+    localStorage.removeItem('fullName');
+    window.location.href = '/login';
   };
 
   return (
     <div className="dashboard-container">
-      <Navbar fullName={fullName} />
       <Sidebar onLogout={handleLogout} />
-      <div className="dashboard-content">
-        <CurrencyCards balances={balances} onExchange={handleExchange} />
-        <TransactionHistory />
+      <div className="main-content">
+        <Navbar fullName={fullName} />
+        <div className="dashboard-content">
+          <CurrencyCards balances={balances} onExchange={handleExchange} />
+          <TransactionHistory />
+        </div>
       </div>
     </div>
   );
