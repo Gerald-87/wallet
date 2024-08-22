@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { wallet_backend } from '../../../declarations/wallet_backend';
 import './Dashboard.css';
 
@@ -16,9 +17,9 @@ const Sidebar = ({ onLogout }) => (
   <div className="sidebar">
     <div className="logo">Dashboard</div>
     <ul>
-      <li><a href="#dashboard">Dashboard</a></li>
-      <li><a href="#deposit">Deposit</a></li>
-      <li><a href="#withdraw">Withdraw</a></li>
+      <li><Link to="/dashboard">Dashboard</Link></li>
+      <li><Link to="/deposit">Deposit</Link></li>
+      <li><Link href="/withdraw">Withdraw</Link></li>
       <li><a href="#transfer">Transfer</a></li>
       <li><a href="#pay-bills">Pay Bills</a></li>
       <li><a href="#customer">Customers</a></li>
@@ -59,6 +60,7 @@ const TransactionHistory = () => (
         </tr>
       </thead>
       <tbody>
+        {/* Example transactions; replace with dynamic data as needed */}
         <tr>
           <td>2024-08-01</td>
           <td>Deposit</td>
@@ -91,6 +93,47 @@ const TransactionHistory = () => (
     </table>
   </div>
 );
+
+const DepositForm = ({ onDeposit }) => {
+  const [amount, setAmount] = useState('');
+  const [currency, setCurrency] = useState('ZMW');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (amount && !isNaN(amount) && amount > 0) {
+      onDeposit(parseFloat(amount), currency);
+    } else {
+      alert('Please enter a valid amount.');
+    }
+  };
+
+  return (
+    <div id="deposit-section" className="deposit-form">
+      <h2>Deposit Funds</h2>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Amount:
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Currency:
+          <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
+            <option value="ZMW">Zambian Kwacha (ZMW)</option>
+            <option value="USD">USD Dollar (USD)</option>
+            <option value="MWK">Malawian Kwacha (MWK)</option>
+            <option value="ZWL">Zimbabwean Dollar (ZWL)</option>
+          </select>
+        </label>
+        <button type="submit">Deposit</button>
+      </form>
+    </div>
+  );
+};
 
 const Dashboard = () => {
   const [userId, setUserId] = useState('');
@@ -142,6 +185,25 @@ const Dashboard = () => {
     }
   }, [userId]);
 
+  const handleDeposit = async (amount, currency) => {
+    try {
+      const response = await wallet_backend.depositFunds(userId, amount, currency);
+      
+      if ('ok' in response) {
+        setBalances(prevBalances => ({
+          ...prevBalances,
+          [currency.toLowerCase()]: prevBalances[currency.toLowerCase()] + amount,
+        }));
+        alert('Deposit successful.');
+      } else {
+        alert('Deposit failed: ' + response.err);
+      }
+    } catch (error) {
+      console.error('Error making deposit:', error);
+      alert('An error occurred while making the deposit.');
+    }
+  };
+
   const handleExchange = async (fromCurrency) => {
     const toCurrency = prompt('Enter target currency (ZMW, USD, MWK, ZWL):');
     const amount = parseFloat(prompt('Enter amount to exchange:'));
@@ -163,29 +225,26 @@ const Dashboard = () => {
 
     if (!fromCurrencyCode) {
       alert(`Invalid source currency: ${fromCurrency}`);
-      console.error('Invalid source currency:', fromCurrency);
       return;
     }
 
     if (!toCurrencyCode) {
       alert(`Invalid target currency: ${toCurrency}`);
-      console.error('Invalid target currency:', toCurrency);
       return;
     }
 
     try {
-      const response = await wallet_backend.exchangeCurrency(userId, fromCurrencyCode, toCurrencyCode, amount);
-      
+      const response = await wallet_backend.exchangeCurrency(userId, amount, fromCurrencyCode, toCurrencyCode);
+
       if ('ok' in response) {
-        const exchangedAmount = response.ok;
         setBalances(prevBalances => ({
           ...prevBalances,
-          [fromCurrencyCode]: prevBalances[fromCurrencyCode] - amount,
-          [toCurrencyCode]: prevBalances[toCurrencyCode] + exchangedAmount,
+          [fromCurrencyCode.toLowerCase()]: prevBalances[fromCurrencyCode.toLowerCase()] - amount,
+          [toCurrencyCode.toLowerCase()]: prevBalances[toCurrencyCode.toLowerCase()] + response.ok,
         }));
-        alert('Currency exchanged successfully.');
+        alert('Exchange successful.');
       } else {
-        alert('Currency exchange failed: ' + response.err);
+        alert('Exchange failed: ' + response.err);
       }
     } catch (error) {
       console.error('Error exchanging currency:', error);
@@ -196,16 +255,17 @@ const Dashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('userId');
     localStorage.removeItem('fullName');
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   return (
-    <div className="dashboard-container">
-      <Sidebar onLogout={handleLogout} />
+    <div className="dashboard">
+      <Navbar fullName={fullName} />
       <div className="main-content">
-        <Navbar fullName={fullName} />
+        <Sidebar onLogout={handleLogout} />
         <div className="dashboard-content">
           <CurrencyCards balances={balances} onExchange={handleExchange} />
+          <DepositForm onDeposit={handleDeposit} />
           <TransactionHistory />
         </div>
       </div>

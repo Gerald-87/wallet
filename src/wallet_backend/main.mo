@@ -34,7 +34,8 @@ actor {
     type BillType = {
         #Water;
         #Electricity;
-        #School;
+        #SchoolFees;
+        #TV: {#GoTv; #DsTv; #SuperStar;}
     };
 
     type Currency = {
