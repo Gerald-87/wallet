@@ -19,7 +19,7 @@ const Sidebar = ({ onLogout }) => (
     <ul>
       <li><Link to="/dashboard">Dashboard</Link></li>
       <li><Link to="/deposit">Deposit</Link></li>
-      <li><Link href="/withdraw">Withdraw</Link></li>
+      <li><Link to="/withdraw">Withdraw</Link></li>
       <li><a href="#transfer">Transfer</a></li>
       <li><a href="#pay-bills">Pay Bills</a></li>
       <li><a href="#customer">Customers</a></li>
@@ -135,6 +135,47 @@ const DepositForm = ({ onDeposit }) => {
   );
 };
 
+const WithdrawForm = ({ onWithdraw }) => {
+  const [amount, setAmount] = useState('');
+  const [currency, setCurrency] = useState('ZMW');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (amount && !isNaN(amount) && amount > 0) {
+      onWithdraw(parseFloat(amount), currency);
+    } else {
+      alert('Please enter a valid amount.');
+    }
+  };
+
+  return (
+    <div id="withdraw-section" className="withdraw-form">
+      <h2>Withdraw Funds</h2>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Amount:
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Currency:
+          <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
+            <option value="ZMW">Zambian Kwacha (ZMW)</option>
+            <option value="USD">USD Dollar (USD)</option>
+            <option value="MWK">Malawian Kwacha (MWK)</option>
+            <option value="ZWL">Zimbabwean Dollar (ZWL)</option>
+          </select>
+        </label>
+        <button type="submit">Withdraw</button>
+      </form>
+    </div>
+  );
+};
+
 const Dashboard = () => {
   const [userId, setUserId] = useState('');
   const [fullName, setFullName] = useState('');
@@ -204,52 +245,27 @@ const Dashboard = () => {
     }
   };
 
-  const handleExchange = async (fromCurrency) => {
-    const toCurrency = prompt('Enter target currency (ZMW, USD, MWK, ZWL):');
-    const amount = parseFloat(prompt('Enter amount to exchange:'));
-
-    if (!amount || isNaN(amount) || amount <= 0) {
-      alert('Invalid amount.');
-      return;
-    }
-
-    const currencyMap = {
-      'Zambian Kwacha (ZMW)': 'ZMW',
-      'USD Dollar (USD)': 'USD',
-      'Malawian Kwacha (MWK)': 'MWK',
-      'Zimbabwean Dollar (ZWL)': 'ZWL'
-    };
-
-    const fromCurrencyCode = currencyMap[fromCurrency];
-    const toCurrencyCode = currencyMap[toCurrency];
-
-    if (!fromCurrencyCode) {
-      alert(`Invalid source currency: ${fromCurrency}`);
-      return;
-    }
-
-    if (!toCurrencyCode) {
-      alert(`Invalid target currency: ${toCurrency}`);
-      return;
-    }
-
+  const handleWithdraw = async (amount, currency) => {
     try {
-      const response = await wallet_backend.exchangeCurrency(userId, amount, fromCurrencyCode, toCurrencyCode);
-
+      const response = await wallet_backend.withdrawFunds(userId, amount, currency);
+      
       if ('ok' in response) {
         setBalances(prevBalances => ({
           ...prevBalances,
-          [fromCurrencyCode.toLowerCase()]: prevBalances[fromCurrencyCode.toLowerCase()] - amount,
-          [toCurrencyCode.toLowerCase()]: prevBalances[toCurrencyCode.toLowerCase()] + response.ok,
+          [currency.toLowerCase()]: prevBalances[currency.toLowerCase()] - amount,
         }));
-        alert('Exchange successful.');
+        alert('Withdrawal successful.');
       } else {
-        alert('Exchange failed: ' + response.err);
+        alert('Withdrawal failed: ' + response.err);
       }
     } catch (error) {
-      console.error('Error exchanging currency:', error);
-      alert('An error occurred while exchanging currency.');
+      console.error('Error making withdrawal:', error);
+      alert('An error occurred while making the withdrawal.');
     }
+  };
+
+  const handleExchange = (currency) => {
+    alert(`Exchange functionality for ${currency} is coming soon.`);
   };
 
   const handleLogout = () => {
@@ -261,13 +277,13 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <Navbar fullName={fullName} />
+      <Sidebar onLogout={handleLogout} />
       <div className="main-content">
-        <Sidebar onLogout={handleLogout} />
-        <div className="dashboard-content">
-          <CurrencyCards balances={balances} onExchange={handleExchange} />
-          <DepositForm onDeposit={handleDeposit} />
-          <TransactionHistory />
-        </div>
+        <h1>Welcome to Your Dashboard</h1>
+        <CurrencyCards balances={balances} onExchange={handleExchange} />
+        <DepositForm onDeposit={handleDeposit} />
+        <WithdrawForm onWithdraw={handleWithdraw} />
+        <TransactionHistory />
       </div>
     </div>
   );

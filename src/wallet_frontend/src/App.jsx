@@ -5,8 +5,9 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Agent from './components/Agent';
 import Customer from './components/Customer';
-import Deposit from './components/Deposit'; // Import Deposit
-import Deposit from './components/Withdraw';
+import Deposit from './components/Deposit'; // 
+import Withdraw from './components/Withdraw';
+
 
 // Helper function to check authentication
 const isAuthenticated = () => {
@@ -49,6 +50,7 @@ function App() {
       path: "/withdraw",
       element: <ProtectedRoute element={<Withdraw />} />,
     },
+    
   ]);
 
   return (

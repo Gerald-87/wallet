@@ -14,7 +14,6 @@ const Withdraw = ({ onClose, onWithdrawSuccess = () => {} }) => {
       setMessage('Account number is required.');
       return;
     }
-    
 
     // Validate amount
     if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
