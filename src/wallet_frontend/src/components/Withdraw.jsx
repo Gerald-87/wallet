@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { wallet_backend } from '../../../declarations/wallet_backend';
+import { useNavigate } from 'react-router-dom';
 import './Withdraw.css';
 
-const Withdraw = ({ onClose, onWithdrawSuccess = () => {} }) => {
+const Withdraw = ({ onClose }) => {
   const [currency, setCurrency] = useState('ZMW');
   const [amount, setAmount] = useState('');
   const [account, setAccount] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate(); // For navigation
 
   const handleWithdraw = async () => {
     // Validate account number
@@ -43,15 +45,11 @@ const Withdraw = ({ onClose, onWithdrawSuccess = () => {} }) => {
 
       // Check if the result is successful
       if (result && 'ok' in result) {
-        if (typeof onWithdrawSuccess === 'function') {
-          onWithdrawSuccess(currency, parseFloat(amount));
-        } else {
-          console.warn('onWithdrawSuccess is not a function');
-        }
         setMessage('Withdrawal successful!');
-        // Clear the input fields after successful withdrawal
         setAmount('');
         setAccount('');
+        // Redirect to dashboard after successful withdrawal
+        navigate('/dashboard');
       } else {
         // Display an error message if the withdrawal failed
         setMessage(`Withdrawal failed: ${result?.err || 'Unknown error'}`);
@@ -60,6 +58,10 @@ const Withdraw = ({ onClose, onWithdrawSuccess = () => {} }) => {
       console.error('Error making withdrawal:', error);
       setMessage(`An error occurred while processing your withdrawal: ${error.message || 'Unknown error'}`);
     }
+  };
+
+  const handleCancel = () => {
+    navigate('/dashboard'); // Redirect to dashboard on cancel
   };
 
   return (
@@ -94,7 +96,7 @@ const Withdraw = ({ onClose, onWithdrawSuccess = () => {} }) => {
           />
         </label>
         <button onClick={handleWithdraw}>Withdraw</button>
-        <button onClick={onClose}>Cancel</button>
+        <button onClick={handleCancel}>Cancel</button>
         {message && <p className="message">{message}</p>}
       </div>
     </div>

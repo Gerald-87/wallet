@@ -1,27 +1,26 @@
 import React, { useState } from 'react';
 import { wallet_backend } from '../../../declarations/wallet_backend';
+import { useNavigate } from 'react-router-dom';
 import './Deposit.css';
 
-const Deposit = ({ onClose, onDepositSuccess = () => {} }) => {
+const Deposit = ({ onClose }) => {
   const [currency, setCurrency] = useState('ZMW');
   const [amount, setAmount] = useState('');
   const [account, setAccount] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate(); // For navigation
 
   const handleDeposit = async () => {
-    // Validate account number
     if (!account.trim()) {
       setMessage('Account number is required.');
       return;
     }
 
-    // Validate amount
     if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
       setMessage('Please enter a valid amount.');
       return;
     }
 
-    // Currency mapping
     const currencyMap = {
       ZMW: { ZambianKwacha: null },
       USD: { USDollar: null },
@@ -30,36 +29,32 @@ const Deposit = ({ onClose, onDepositSuccess = () => {} }) => {
     };
     const currencyCode = currencyMap[currency];
 
-    // Validate selected currency
     if (!currencyCode) {
       setMessage('Invalid currency selected.');
       return;
     }
 
     try {
-      // Call the backend function and await the result
       const result = await wallet_backend.depositIntoUserByAccount(account, currencyCode, parseFloat(amount));
-      console.log('Deposit Result:', result); // Debugging
+      console.log('Deposit Result:', result);
 
-      // Check if the result is successful
       if (result && 'ok' in result) {
-        if (typeof onDepositSuccess === 'function') {
-          onDepositSuccess(currency, parseFloat(amount));
-        } else {
-          console.warn('onDepositSuccess is not a function');
-        }
         setMessage('Deposit successful!');
-        // Clear the input fields after successful deposit
         setAmount('');
         setAccount('');
+        // Redirect to dashboard after successful deposit
+        navigate('/dashboard');
       } else {
-        // Display an error message if the deposit failed
         setMessage(`Deposit failed: ${result?.err || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error making deposit:', error);
       setMessage(`An error occurred while processing your deposit: ${error.message || 'Unknown error'}`);
     }
+  };
+
+  const handleCancel = () => {
+    navigate('/dashboard'); // Redirect to dashboard on cancel
   };
 
   return (
@@ -94,7 +89,7 @@ const Deposit = ({ onClose, onDepositSuccess = () => {} }) => {
           />
         </label>
         <button onClick={handleDeposit}>Deposit</button>
-        <button onClick={onClose}>Cancel</button>
+        <button onClick={handleCancel}>Cancel</button>
         {message && <p className="message">{message}</p>}
       </div>
     </div>

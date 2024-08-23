@@ -20,13 +20,12 @@ const Sidebar = ({ onLogout }) => (
       <li><a href="/dashboard">Dashboard</a></li>
       <li><a href="/deposit">Deposit</a></li>
       <li><a href="/withdraw">Withdraw</a></li>
-      <li><a href="#transfer">Transfer</a></li>
-      <li><a href="#pay-bills">Pay Bills</a></li>
+      <li><a href="/transfer">Transfer</a></li>
+      <li><a href="/pay-bills">Pay Bills</a></li>
       <li><a href="/agent">Agents</a></li>
       <li><a href="/customer">Customers</a></li>
-      
-      <li><a href="#profile">Profile</a></li>
-      <li><a href="#logout" onClick={onLogout}>Logout</a></li>
+      <li><a href="/profile">Profile</a></li>
+      <li><a href="/logout" onClick={onLogout}>Logout</a></li>
     </ul>
   </div>
 );
@@ -96,7 +95,7 @@ const TransactionHistory = () => (
   </div>
 );
 
-const Agent = () => {
+const Dashboard = () => {
   const [userId, setUserId] = useState('');
   const [fullName, setFullName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
@@ -206,4 +205,4 @@ const Agent = () => {
   );
 };
 
-export default Agent;
+export default Dashboard;
