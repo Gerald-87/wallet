@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { wallet_backend } from '../../../declarations/wallet_backend';
 import './Dashboard.css';
 
-const Navbar = ({ fullName }) => (
+const Navbar = ({ fullName, accountNumber }) => (
   <div className="navbar">
     <div className="logo">Dashboard</div>
     <div className="user-info">
       <div className="user-icon">&#128100;</div>
       <div className="user-name">{fullName}</div>
+      <div className="accountNo">{accountNumber}</div>
     </div>
   </div>
 );
@@ -17,14 +17,16 @@ const Sidebar = ({ onLogout }) => (
   <div className="sidebar">
     <div className="logo">Dashboard</div>
     <ul>
-      <li><Link to="/dashboard">Dashboard</Link></li>
-      <li><Link to="/deposit">Deposit</Link></li>
-      <li><Link to="/withdraw">Withdraw</Link></li>
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/deposit">Deposit</a></li>
+      <li><a href="/withdraw">Withdraw</a></li>
       <li><a href="#transfer">Transfer</a></li>
       <li><a href="#pay-bills">Pay Bills</a></li>
-      <li><a href="#customer">Customers</a></li>
-      <li><a href="#agent">Agents</a></li>
-      <li><a href="/" onClick={onLogout}>Logout</a></li>
+      <li><a href="/agent">Agents</a></li>
+      <li><a href="/customer">Customers</a></li>
+      
+      <li><a href="#profile">Profile</a></li>
+      <li><a href="#logout" onClick={onLogout}>Logout</a></li>
     </ul>
   </div>
 );
@@ -49,6 +51,7 @@ const CurrencyCards = ({ balances, onExchange }) => (
 const TransactionHistory = () => (
   <div className="transaction-history">
     <h2>Transaction History</h2>
+  
     <table>
       <thead>
         <tr>
@@ -60,7 +63,6 @@ const TransactionHistory = () => (
         </tr>
       </thead>
       <tbody>
-        {/* Example transactions; replace with dynamic data as needed */}
         <tr>
           <td>2024-08-01</td>
           <td>Deposit</td>
@@ -94,89 +96,7 @@ const TransactionHistory = () => (
   </div>
 );
 
-const DepositForm = ({ onDeposit }) => {
-  const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState('ZMW');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (amount && !isNaN(amount) && amount > 0) {
-      onDeposit(parseFloat(amount), currency);
-    } else {
-      alert('Please enter a valid amount.');
-    }
-  };
-
-  return (
-    <div id="deposit-section" className="deposit-form">
-      <h2>Deposit Funds</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Amount:
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Currency:
-          <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
-            <option value="ZMW">Zambian Kwacha (ZMW)</option>
-            <option value="USD">USD Dollar (USD)</option>
-            <option value="MWK">Malawian Kwacha (MWK)</option>
-            <option value="ZWL">Zimbabwean Dollar (ZWL)</option>
-          </select>
-        </label>
-        <button type="submit">Deposit</button>
-      </form>
-    </div>
-  );
-};
-
-const WithdrawForm = ({ onWithdraw }) => {
-  const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState('ZMW');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (amount && !isNaN(amount) && amount > 0) {
-      onWithdraw(parseFloat(amount), currency);
-    } else {
-      alert('Please enter a valid amount.');
-    }
-  };
-
-  return (
-    <div id="withdraw-section" className="withdraw-form">
-      <h2>Withdraw Funds</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Amount:
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Currency:
-          <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
-            <option value="ZMW">Zambian Kwacha (ZMW)</option>
-            <option value="USD">USD Dollar (USD)</option>
-            <option value="MWK">Malawian Kwacha (MWK)</option>
-            <option value="ZWL">Zimbabwean Dollar (ZWL)</option>
-          </select>
-        </label>
-        <button type="submit">Withdraw</button>
-      </form>
-    </div>
-  );
-};
-
-const Dashboard = () => {
+const Agent = () => {
   const [userId, setUserId] = useState('');
   const [fullName, setFullName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
@@ -226,67 +146,64 @@ const Dashboard = () => {
     }
   }, [userId]);
 
-  const handleDeposit = async (amount, currency) => {
+  const handleExchange = async (fromCurrency) => {
+    const toCurrency = prompt('Enter target currency (ZMW, USD, MWK, ZWL):');
+    const amount = parseFloat(prompt('Enter amount to exchange:'));
+
+    if (!amount || isNaN(amount) || amount <= 0) {
+      alert('Invalid amount.');
+      return;
+    }
+
+    const currencyMap = {
+      'Zambian Kwacha (ZMW)': 'zambianKwacha',
+      'USD Dollar (USD)': 'usDollar',
+      'Malawian Kwacha (MWK)': 'malawianKwacha',
+      'Zimbabwean Dollar (ZWL)': 'zimbabweanDollar'
+    };
+
+    if (!currencyMap[toCurrency]) {
+      alert('Invalid currency.');
+      return;
+    }
+
     try {
-      const response = await wallet_backend.depositFunds(userId, amount, currency);
-      
+      const response = await wallet_backend.exchangeCurrency(userId, fromCurrency, toCurrency, amount);
       if ('ok' in response) {
         setBalances(prevBalances => ({
           ...prevBalances,
-          [currency.toLowerCase()]: prevBalances[currency.toLowerCase()] + amount,
+          [currencyMap[fromCurrency]]: prevBalances[currencyMap[fromCurrency]] - amount,
+          [currencyMap[toCurrency]]: prevBalances[currencyMap[toCurrency]] + response.ok,
         }));
-        alert('Deposit successful.');
+        alert('Currency exchanged successfully.');
       } else {
-        alert('Deposit failed: ' + response.err);
+        alert('Currency exchange failed.');
       }
     } catch (error) {
-      console.error('Error making deposit:', error);
-      alert('An error occurred while making the deposit.');
+      console.error('Error exchanging currency:', error);
+      alert('An error occurred while exchanging currency.');
     }
-  };
-
-  const handleWithdraw = async (amount, currency) => {
-    try {
-      const response = await wallet_backend.withdrawFunds(userId, amount, currency);
-      
-      if ('ok' in response) {
-        setBalances(prevBalances => ({
-          ...prevBalances,
-          [currency.toLowerCase()]: prevBalances[currency.toLowerCase()] - amount,
-        }));
-        alert('Withdrawal successful.');
-      } else {
-        alert('Withdrawal failed: ' + response.err);
-      }
-    } catch (error) {
-      console.error('Error making withdrawal:', error);
-      alert('An error occurred while making the withdrawal.');
-    }
-  };
-
-  const handleExchange = (currency) => {
-    alert(`Exchange functionality for ${currency} is coming soon.`);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('userId');
     localStorage.removeItem('fullName');
-    window.location.href = '/';
+    window.location.href = '/login';
   };
 
   return (
-    <div className="dashboard">
-      <Navbar fullName={fullName} />
+    <div className="dashboard-container">
       <Sidebar onLogout={handleLogout} />
       <div className="main-content">
-        <h1>Welcome to Your Dashboard</h1>
-        <CurrencyCards balances={balances} onExchange={handleExchange} />
-        <DepositForm onDeposit={handleDeposit} />
-        <WithdrawForm onWithdraw={handleWithdraw} />
-        <TransactionHistory />
+        <Navbar fullName={fullName} 
+        accountNumber={accountNumber} />
+        <div className="dashboard-content">
+          <CurrencyCards balances={balances} onExchange={handleExchange} />
+          <TransactionHistory />
+        </div>
       </div>
     </div>
   );
 };
 
-export default Dashboard;
+export default Agent;

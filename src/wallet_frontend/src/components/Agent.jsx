@@ -17,9 +17,9 @@ const Sidebar = ({ onLogout }) => (
   <div className="sidebar">
     <div className="logo">Dashboard</div>
     <ul>
-      <li><a href="#dashboard">Dashboard</a></li>
-      <li><a href="#deposit">Deposit</a></li>
-      <li><a href="#withdraw">Withdraw</a></li>
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/deposit">Deposit</a></li>
+      <li><a href="/withdraw">Withdraw</a></li>
       <li><a href="#transfer">Transfer</a></li>
       <li><a href="#pay-bills">Pay Bills</a></li>
       <li><a href="#profile">Profile</a></li>
