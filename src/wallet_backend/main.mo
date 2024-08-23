@@ -111,7 +111,7 @@ actor {
     };
 
     public shared func registerUser(fullName : Text, email : Text, password : Text, role : UserRole) : async Result.Result<Text, Text> {
-        if (Text.size(fullName) == 0 or Text.size(email) == 0 or Text.size(password) < 8) {
+        if (Text.size(fullName) == 0 or Text.size(email) == 0 or Text.size(password) < 4) {
             return #err("Invalid input. Ensure all fields are filled and password is at least 8 characters long.");
         };
 
