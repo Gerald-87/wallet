@@ -1,0 +1,60 @@
+/* PayBills.css */
+
+.pay-bills-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .pay-bills-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .pay-bills-content h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .pay-bills-content label {
+    display: block;
+    margin-bottom: 15px;
+  }
+  
+  .pay-bills-content input,
+  .pay-bills-content select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .pay-bills-content button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  
+  .pay-bills-content button:hover {
+    background-color: #0056b3;
+  }
+  
+  .message {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #333;
+  }
+  

@@ -7,6 +7,8 @@ import Agent from './components/Agent';
 import Customer from './components/Customer';
 import Deposit from './components/Deposit'; // 
 import Withdraw from './components/Withdraw';
+import paybills from  './components/PayBills'
+import PayBills from './components/PayBills';
 
 
 // Helper function to check authentication
@@ -49,6 +51,10 @@ function App() {
     {
       path: "/withdraw",
       element: <ProtectedRoute element={<Withdraw />} />,
+    },
+    {
+      path: "/paybills",
+      element: <ProtectedRoute element={<PayBills />} />,
     },
     
   ]);
