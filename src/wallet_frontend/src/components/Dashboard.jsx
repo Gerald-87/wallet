@@ -21,7 +21,8 @@ const Sidebar = ({ onLogout }) => (
       <li><a href="/deposit">Deposit</a></li>
       <li><a href="/withdraw">Withdraw</a></li>
       <li><a href="/transfer">Transfer</a></li>
-      <li><a href="/pay-bills">Pay Bills</a></li>
+      <li><a href="/paybills">PayBills</a></li>
+      <li><a href="/exchange">Exchange</a></li>
       <li><a href="/agent">Agents</a></li>
       <li><a href="/customer">Customers</a></li>
       <li><a href="/profile">Profile</a></li>
@@ -30,6 +31,9 @@ const Sidebar = ({ onLogout }) => (
   </div>
 );
 
+
+
+// Card component for displaying currency balances
 const Card = ({ currency, balance, onExchange }) => (
   <div className="card">
     <h3>{currency}</h3>
@@ -38,6 +42,7 @@ const Card = ({ currency, balance, onExchange }) => (
   </div>
 );
 
+// CurrencyCards component for displaying all currency cards
 const CurrencyCards = ({ balances, onExchange }) => (
   <div className="currency-cards">
     <Card currency="Zambian Kwacha (ZMW)" balance={balances.zambianKwacha} onExchange={onExchange} />
@@ -50,7 +55,6 @@ const CurrencyCards = ({ balances, onExchange }) => (
 const TransactionHistory = () => (
   <div className="transaction-history">
     <h2>Transaction History</h2>
-  
     <table>
       <thead>
         <tr>
@@ -62,6 +66,7 @@ const TransactionHistory = () => (
         </tr>
       </thead>
       <tbody>
+        {/* Sample data, replace with dynamic data fetched from backend */}
         <tr>
           <td>2024-08-01</td>
           <td>Deposit</td>
@@ -145,6 +150,7 @@ const Dashboard = () => {
     }
   }, [userId]);
 
+  // Handle currency exchange
   const handleExchange = async (fromCurrency) => {
     const toCurrency = prompt('Enter target currency (ZMW, USD, MWK, ZWL):');
     const amount = parseFloat(prompt('Enter amount to exchange:'));
@@ -155,12 +161,12 @@ const Dashboard = () => {
     }
 
     const currencyMap = {
-      'Zambian Kwacha (ZMW)': 'zambianKwacha',
-      'USD Dollar (USD)': 'usDollar',
-      'Malawian Kwacha (MWK)': 'malawianKwacha',
-      'Zimbabwean Dollar (ZWL)': 'zimbabweanDollar'
+      ZMW: { ZambianKwacha: null },
+      USD: { USDollar: null },
+      MWK: { MalawianKwacha: null },
+      ZWL: { ZimbabweanDollar: null }
     };
-
+  
     if (!currencyMap[toCurrency]) {
       alert('Invalid currency.');
       return;
@@ -183,23 +189,140 @@ const Dashboard = () => {
       alert('An error occurred while exchanging currency.');
     }
   };
+  
+  const handleDeposit = async () => {
+    const amount = parseFloat(prompt('Enter amount to deposit:'));
+    const currency = prompt('Enter currency (ZMW, USD, MWK, ZWL):');
 
+    if (!amount || isNaN(amount) || amount <= 0) {
+      alert('Invalid amount.');
+      return;
+    }
+
+    try {
+      const response = await wallet_backend.deposit(userId, amount, currency);
+      if ('ok' in response) {
+        setBalances(prevBalances => ({
+          ...prevBalances,
+          [currency]: prevBalances[currency] + amount,
+        }));
+        alert('Deposit successful.');
+      } else {
+        alert('Deposit failed.');
+      }
+    } catch (error) {
+      console.error('Error depositing:', error);
+      alert('An error occurred during deposit.');
+    }
+  };
+
+  const handleWithdraw = async () => {
+    const amount = parseFloat(prompt('Enter amount to withdraw:'));
+    const currency = prompt('Enter currency (ZMW, USD, MWK, ZWL):');
+
+    if (!amount || isNaN(amount) || amount <= 0) {
+      alert('Invalid amount.');
+      return;
+    }
+
+    try {
+      const response = await wallet_backend.withdraw(userId, amount, currency);
+      if ('ok' in response) {
+        setBalances(prevBalances => ({
+          ...prevBalances,
+          [currency]: prevBalances[currency] - amount,
+        }));
+        alert('Withdrawal successful.');
+      } else {
+        alert('Withdrawal failed.');
+      }
+    } catch (error) {
+      console.error('Error withdrawing:', error);
+      alert('An error occurred during withdrawal.');
+    }
+  };
+
+  const handleTransfer = async () => {
+    const recipientId = prompt('Enter recipient account ID:');
+    const amount = parseFloat(prompt('Enter amount to transfer:'));
+    const currency = prompt('Enter currency (ZMW, USD, MWK, ZWL):');
+
+    if (!recipientId) {
+      alert('Recipient account ID is required.');
+      return;
+    }
+
+    if (!amount || isNaN(amount) || amount <= 0) {
+      alert('Invalid amount.');
+      return;
+    }
+
+    try {
+      const response = await wallet_backend.transfer(userId, recipientId, amount, currency);
+      if ('ok' in response) {
+        setBalances(prevBalances => ({
+          ...prevBalances,
+          [currencyMap[currency]]: prevBalances[currencyMap[currency]] - amount,
+        }));
+        alert('Transfer successful.');
+      } else {
+        alert('Transfer failed.');
+      }
+    } catch (error) {
+      console.error('Error transferring:', error);
+      alert('An error occurred during the transfer.');
+    }
+  };
+  const handlePayBills = async () => {
+    const billType = prompt('Enter bill type (e.g., Electricity, Water, School):');
+    const amount = parseFloat(prompt('Enter amount to pay:'));
+    const currency = prompt('Enter currency (ZMW, USD, MWK, ZWL):');
+
+    if (!billType) {
+      alert('Bill type is required.');
+      return;
+    }
+
+    if (!amount || isNaN(amount) || amount <= 0) {
+      alert('Invalid amount.');
+      return;
+    }
+
+    try {
+      const response = await wallet_backend.payBills(userId, billType, amount, currency);
+      if ('ok' in response) {
+        setBalances(prevBalances => ({
+          ...prevBalances,
+          [currency]: prevBalances[currency] - amount,
+        }));
+        alert('Bill payment successful.');
+      } else {
+        alert('Bill payment failed.');
+      }
+    } catch (error) {
+      console.error('Error paying bills:', error);
+      alert('An error occurred while paying bills.');
+    }
+  };
   const handleLogout = () => {
     localStorage.removeItem('userId');
     localStorage.removeItem('fullName');
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard">
+      <Navbar fullName={fullName} accountNumber={accountNumber} />
       <Sidebar onLogout={handleLogout} />
       <div className="main-content">
-        <Navbar fullName={fullName} 
-        accountNumber={accountNumber} />
-        <div className="dashboard-content">
-          <CurrencyCards balances={balances} onExchange={handleExchange} />
-          <TransactionHistory />
+        <CurrencyCards balances={balances} onExchange={handleExchange} />
+        <div className="actions">
+          <button onClick={handleDeposit}>Deposit</button>
+          <button onClick={handleWithdraw}>Withdraw</button>
+          <button onClick={handleTransfer}>Transfer</button>
+          <button onClick={handlePayBills}>PayBills</button>
         </div>
+        <TransactionHistory />
       </div>
     </div>
   );

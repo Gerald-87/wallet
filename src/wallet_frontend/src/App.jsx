@@ -7,8 +7,9 @@ import Agent from './components/Agent';
 import Customer from './components/Customer';
 import Deposit from './components/Deposit'; // 
 import Withdraw from './components/Withdraw';
-import paybills from  './components/PayBills'
 import PayBills from './components/PayBills';
+import Transfer from './components/Transfer';
+import Exchange from './components/Exchange'
 
 
 // Helper function to check authentication
@@ -55,6 +56,14 @@ function App() {
     {
       path: "/paybills",
       element: <ProtectedRoute element={<PayBills />} />,
+    },
+    {
+      path: "/transfer",
+      element: <ProtectedRoute element={<Transfer />} />,
+    },
+    {
+      path: "/exchange",
+      element: <ProtectedRoute element={<Exchange />} />,
     },
     
   ]);

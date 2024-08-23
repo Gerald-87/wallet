@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { wallet_backend } from '../../../declarations/wallet_backend';
+import { useNavigate } from 'react-router-dom';
 import './PayBills.css';
 
-const PayBills = ({ onClose, onPaySuccess = () => {} }) => {
-  const [billType, setBillType] = useState('');
+const PayBills = ({ onClose }) => {
   const [currency, setCurrency] = useState('ZMW');
   const [amount, setAmount] = useState('');
+  const [account, setAccount] = useState('');
+  const [billType, setBillType] = useState('Electricity'); // Default bill type
   const [message, setMessage] = useState('');
+  const navigate = useNavigate(); // For navigation
 
   const handlePayBill = async () => {
-    // Validate bill type
-    if (!billType.trim()) {
-      setMessage('Bill type is required.');
+    // Validate account number
+    if (!account.trim()) {
+      setMessage('Account number is required.');
       return;
     }
 
@@ -23,11 +26,11 @@ const PayBills = ({ onClose, onPaySuccess = () => {} }) => {
 
     // Currency mapping
     const currencyMap = {
-        ZMW: { ZambianKwacha: null },
-        USD: { USDollar: null },
-        MWK: { MalawianKwacha: null },
-        ZWL: { ZimbabweanDollar: null }
-      };
+      ZMW: { ZambianKwacha: null },
+      USD: { USDollar: null },
+      MWK: { MalawianKwacha: null },
+      ZWL: { ZimbabweanDollar: null }
+    };
     const currencyCode = currencyMap[currency];
 
     // Validate selected currency
@@ -36,44 +39,69 @@ const PayBills = ({ onClose, onPaySuccess = () => {} }) => {
       return;
     }
 
+    // Bill type mapping
+    const billTypeMap = {
+      Electricity: { Electricity: null },
+      Water: { Water: null },
+      Internet: { Internet: null },
+      Rent: { Rent: null }
+    };
+    const selectedBillType = billTypeMap[billType];
+
+    // Validate selected bill type
+    if (!selectedBillType) {
+      setMessage('Invalid bill type selected.');
+      return;
+    }
+
     try {
       // Call the backend function and await the result
-      const result = await wallet_backend.payBill(billType, currencyCode, parseFloat(amount));
+      const result = await wallet_backend.payBill(account, selectedBillType, currencyCode, parseFloat(amount));
       console.log('Pay Bill Result:', result); // Debugging
 
       // Check if the result is successful
       if (result && 'ok' in result) {
-        if (typeof onPaySuccess === 'function') {
-          onPaySuccess(currency, parseFloat(amount));
-        } else {
-          console.warn('onPaySuccess is not a function');
-        }
         setMessage('Bill payment successful!');
-        // Clear the input fields after successful payment
-        setBillType('');
         setAmount('');
+        setAccount('');
+        setBillType('Electricity'); // Reset bill type to default
+        // Redirect to dashboard after successful payment
+        navigate('/dashboard');
       } else {
         // Display an error message if the payment failed
-        setMessage(`Bill payment failed: ${result?.err || 'Unknown error'}`);
+        setMessage(`Payment failed: ${result?.err || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error('Error making bill payment:', error);
+      console.error('Error making payment:', error);
       setMessage(`An error occurred while processing your payment: ${error.message || 'Unknown error'}`);
     }
   };
 
+  const handleCancel = () => {
+    navigate('/dashboard'); // Redirect to dashboard on cancel
+  };
+
   return (
-    <div className="pay-bills-modal">
-      <div className="pay-bills-content">
+    <div className="paybills-modal">
+      <div className="paybills-content">
         <h2>Pay a Bill</h2>
         <label>
-          Bill Type:
+          Account Number:
           <input
             type="text"
-            value={billType}
-            onChange={(e) => setBillType(e.target.value)}
-            placeholder="Enter bill type"
+            value={account}
+            onChange={(e) => setAccount(e.target.value)}
+            placeholder="Enter account number"
           />
+        </label>
+        <label>
+          Select Bill Type:
+          <select value={billType} onChange={(e) => setBillType(e.target.value)}>
+            <option value="Electricity">Electricity</option>
+            <option value="Water">Water</option>
+            <option value="Internet">Internet</option>
+            <option value="Rent">Rent</option>
+          </select>
         </label>
         <label>
           Select Currency:
@@ -94,7 +122,7 @@ const PayBills = ({ onClose, onPaySuccess = () => {} }) => {
           />
         </label>
         <button onClick={handlePayBill}>Pay Bill</button>
-        <button onClick={onClose}>Cancel</button>
+        <button onClick={handleCancel}>Cancel</button>
         {message && <p className="message">{message}</p>}
       </div>
     </div>
