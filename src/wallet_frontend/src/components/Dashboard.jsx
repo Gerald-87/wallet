@@ -25,7 +25,7 @@ const Sidebar = ({ onLogout }) => (
       <li><a href="/agent">Agents</a></li>
       <li><a href="/customer">Customers</a></li>
       <li><a href="/profile">Profile</a></li>
-      <li><a href="/logout" onClick={onLogout}>Logout</a></li>
+      <li><a href="/" onClick={onLogout}>Logout</a></li>
     </ul>
   </div>
 );
