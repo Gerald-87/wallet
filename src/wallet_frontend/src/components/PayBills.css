@@ -1,86 +1,107 @@
-/* Container for the pay bills modal */
-.pay-bills-modal {
+.paybills-modal {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
-/* Content styling for the pay bills modal */
-.pay-bills-content {
-  background-color: #fff; /* White background */
+.paybills-content {
+  background-color: #ffffff; /* White background for the modal content */
   border-radius: 8px;
   padding: 20px;
-  width: 400px; /* Fixed width for the modal */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  text-align: center; /* Center text alignment */
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Heading styling for modal title */
-.pay-bills-content h2 {
-  margin-bottom: 20px;
+.paybills-content h2 {
   font-size: 24px;
-  color: #333; /* Dark grey color */
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333333;
 }
 
-/* Label styling for form elements */
-.pay-bills-content label {
-  display: block; /* Block display to start on a new line */
+.paybills-content label {
+  display: block;
   margin-bottom: 10px;
-  font-size: 16px;
-  color: #555; /* Medium grey color */
-  text-align: left; /* Align label text to the left */
-}
-
-/* Input field styling */
-.pay-bills-content input,
-.pay-bills-content select {
-  width: calc(100% - 20px); /* Full width minus padding */
-  padding: 10px; /* Padding for input fields */
-  margin-bottom: 15px; /* Spacing between fields */
-  border: 1px solid #ccc; /* Light grey border */
-  border-radius: 4px; /* Rounded corners */
-  font-size: 16px;
-  color: #333; /* Dark grey text color */
-}
-
-/* Button styling */
-.pay-bills-content button {
-  padding: 10px 20px; /* Padding for buttons */
-  margin: 5px; /* Margin around buttons */
-  border: none; /* No border */
-  border-radius: 4px; /* Rounded corners */
-  font-size: 16px;
-  cursor: pointer; /* Pointer cursor on hover */
-}
-
-/* Specific styling for the Pay Bill button */
-.pay-bills-content button:first-of-type {
-  background-color: #4CAF50; /* Green background */
-  color: #fff; /* White text color */
-}
-
-/* Specific styling for the Cancel button */
-.pay-bills-content button:last-of-type {
-  background-color: #f44336; /* Red background */
-  color: #fff; /* White text color */
-}
-
-/* Button hover effect */
-.pay-bills-content button:hover {
-  opacity: 0.9; 
-}
-
-/* Styling for message display */
-.message {
-  margin-top: 15px; 
   font-size: 14px;
-  color: #d32f2f; /* Red color for messages */
-  text-align: center; 
+  color: #555555;
+}
+
+.paybills-content input[type="text"],
+.paybills-content input[type="number"],
+.paybills-content select {
+  width: calc(100% - 20px); /* Full width minus padding */
+  padding: 8px 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.paybills-content input[type="text"]:focus,
+.paybills-content input[type="number"]:focus,
+.paybills-content select:focus {
+  border-color: #007bff; /* Blue border on focus */
+  outline: none;
+}
+
+.paybills-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.paybills-buttons button {
+  width: 48%; /* Buttons take up 48% of the row width */
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.paybills-buttons button.pay {
+  background-color: #007bff; /* Blue background for Pay Bill */
+  color: #ffffff;
+}
+
+.paybills-buttons button.cancel {
+  background-color: #dc3545; /* Red background for Cancel */
+  color: #ffffff;
+}
+
+.paybills-buttons button.pay:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.paybills-buttons button.cancel:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+
+.paybills-content .message {
+  margin-top: 15px;
+  font-size: 14px;
+  color: red; /* Red color for error messages */
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

@@ -121,9 +121,11 @@ const PayBills = ({ onClose }) => {
             placeholder="Enter amount"
           />
         </label>
-        <button onClick={handlePayBill}>Pay Bill</button>
-        <button onClick={handleCancel}>Cancel</button>
-        {message && <p className="message">{message}</p>}
+            <div className="paybills-buttons">
+            <button className="pay" onClick={handlePayBill}>Pay Bill</button>
+            <button className="cancel" onClick={handleCancel}>Cancel</button>
+            </div>
+            {message && <p className="message">{message}</p>}
       </div>
     </div>
   );

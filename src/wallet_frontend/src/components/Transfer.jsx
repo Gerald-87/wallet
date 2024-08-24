@@ -72,6 +72,10 @@ const Transfer = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigate('/dashboard');
+  };
+
   return (
     <div className="transfer-container">
       <h2>Make a Transfer</h2>
@@ -105,7 +109,10 @@ const Transfer = () => {
             required
           />
         </div>
-        <button type="submit">Transfer</button>
+        <div className="button-row">
+          <button type="submit" className="transfer-button">Transfer</button>
+          <button type="button" className="cancel-button" onClick={handleCancel}>Cancel</button>
+        </div>
         {message && <p className="message">{message}</p>}
       </form>
     </div>
