@@ -70,23 +70,23 @@ function App() {
     },
     {
       path: "/deposit",
-      element: <ProtectedRoute element={<Deposit />} allowedRoles={["Customer"]} />,
+      element: <ProtectedRoute element={<Deposit />} allowedRoles={["Admin", "Agent"]} />,
     },
     {
       path: "/withdraw",
-      element: <ProtectedRoute element={<Withdraw />} allowedRoles={["Customer"]} />,
+      element: <ProtectedRoute element={<Withdraw />} allowedRoles={["Admin", "Agent", "Customer"]} />,
     },
     {
       path: "/paybills",
-      element: <ProtectedRoute element={<PayBills />} allowedRoles={["Customer"]} />,
+      element: <ProtectedRoute element={<PayBills />} allowedRoles={["Admin", "Agent", "Customer"]} />,
     },
     {
       path: "/transfer",
-      element: <ProtectedRoute element={<Transfer />} allowedRoles={["Customer"]} />,
+      element: <ProtectedRoute element={<Transfer />} allowedRoles={["Admin", "Agent", "Customer"]} />,
     },
     {
       path: "/exchange",
-      element: <ProtectedRoute element={<Exchange />} allowedRoles={["Customer"]} />,
+      element: <ProtectedRoute element={<Exchange />} allowedRoles={["Admin", "Agent", "Customer"]} />,
     },
     {
       path: "*",

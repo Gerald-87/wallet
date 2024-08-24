@@ -34,6 +34,7 @@
   color: #fff;
   text-decoration: none;
   font-size: 16px;
+  cursor: pointer; /* Cursor pointer for links */
 }
 
 .sidebar ul li a:hover {
@@ -84,8 +85,9 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  width: 22%;
+  width: 19%;
   text-align: center;
+  transition: transform 0.3s ease; /* Smooth transition for shaking effect */
 }
 
 .card h3 {
@@ -109,6 +111,19 @@
 
 .card button:hover {
   background-color: #5c6777;
+}
+
+/* Shaking effect */
+.card:hover {
+  animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
 }
 
 .transaction-history {
