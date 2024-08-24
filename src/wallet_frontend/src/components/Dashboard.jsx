@@ -31,27 +31,23 @@ const Sidebar = ({ onLogout }) => (
   </div>
 );
 
-
-
-// Card component for displaying currency balances
-const Card = ({ currency, balance, onExchange }) => (
+// Card component for displaying currency balances without exchange button
+const Card = ({ currency, balance }) => (
   <div className="card">
     <h3>{currency}</h3>
     <p>Balance: {balance.toFixed(2)}</p>
-    <button onClick={() => onExchange(currency)}>Exchange</button>
   </div>
 );
 
 // CurrencyCards component for displaying all currency cards
-const CurrencyCards = ({ balances, onExchange }) => (
+const CurrencyCards = ({ balances }) => (
   <div className="currency-cards">
-    <Card currency="Zambian Kwacha (ZMW)" balance={balances.zambianKwacha} onExchange={onExchange} />
-    <Card currency="USD Dollar (USD)" balance={balances.usDollar} onExchange={onExchange} />
-    <Card currency="Malawian Kwacha (MWK)" balance={balances.malawianKwacha} onExchange={onExchange} />
-    <Card currency="Zimbabwean Dollar (ZWL)" balance={balances.zimbabweanDollar} onExchange={onExchange} />
+    <Card currency="Zambian Kwacha (ZMW)" balance={balances.zambianKwacha} />
+    <Card currency="USD Dollar (USD)" balance={balances.usDollar} />
+    <Card currency="Malawian Kwacha (MWK)" balance={balances.malawianKwacha} />
+    <Card currency="Zimbabwean Dollar (ZWL)" balance={balances.zimbabweanDollar} />
   </div>
 );
-
 const TransactionHistory = () => (
   <div className="transaction-history">
     <h2>Transaction History</h2>

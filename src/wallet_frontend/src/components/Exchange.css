@@ -1,87 +1,59 @@
-/* Container for the exchange modal */
 .exchange-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  /* Content styling for the exchange modal */
-  .exchange-content {
-    background-color: #fff; /* White background */
-    border-radius: 8px;
-    padding: 20px;
-    width: 400px; /* Fixed width for the modal */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    text-align: center; /* Center text alignment */
-  }
-  
-  /* Heading styling for modal title */
-  .exchange-content h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #333; /* Dark grey color */
-  }
-  
-  /* Label styling for form elements */
-  .exchange-content label {
-    display: block; /* Block display to start on a new line */
-    margin-bottom: 10px;
-    font-size: 16px;
-    color: #555; /* Medium grey color */
-    text-align: left; /* Align label text to the left */
-  }
-  
-  /* Input field and select dropdown styling */
-  .exchange-content input,
-  .exchange-content select {
-    width: calc(100% - 20px); /* Full width minus padding */
-    padding: 10px; /* Padding for input fields */
-    margin-bottom: 15px; /* Spacing between fields */
-    border: 1px solid #ccc; /* Light grey border */
-    border-radius: 4px; /* Rounded corners */
-    font-size: 16px;
-    color: #333; /* Dark grey text color */
-  }
-  
-  /* Button styling */
-  .exchange-content button {
-    padding: 10px 20px; /* Padding for buttons */
-    margin: 5px; /* Margin around buttons */
-    border: none; /* No border */
-    border-radius: 4px; /* Rounded corners */
-    font-size: 16px;
-    cursor: pointer; /* Pointer cursor on hover */
-  }
-  
-  /* Specific styling for the Exchange button */
-  .exchange-content button:first-of-type {
-    background-color: #4CAF50; /* Green background */
-    color: #fff; /* White text color */
-  }
-  
-  /* Specific styling for the Cancel button */
-  .exchange-content button:last-of-type {
-    background-color: #f44336; /* Red background */
-    color: #fff; /* White text color */
-  }
-  
-  /* Button hover effect */
-  .exchange-content button:hover {
-    opacity: 0.9; 
-  }
-  
-  /* Styling for message display */
-  .message {
-    margin-top: 15px; 
-    font-size: 14px;
-    color: #d32f2f; /* Red color for messages */
-    text-align: center; 
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.exchange-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+}
+
+.exchange-content h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.exchange-content label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.exchange-content input,
+.exchange-content select {
+  width: calc(100% - 10px);
+  padding: 8px;
+  margin-bottom: 15px;
+}
+
+.exchange-content button {
+  width: 48%;
+  padding: 10px;
+  margin: 5px 1%;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 5px;
+}
+
+.exchange-content button:last-child {
+  background-color: #f44336;
+}
+
+.message {
+  color: #f44336;
+  text-align: center;
+  margin-top: 15px;
+}
