@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { wallet_backend } from '../../../declarations/wallet_backend';
 import './Dashboard.css';
 
-const Navbar = ({ fullName, accountNumber }) => (
+const Navbar = ({ fullName }) => (
   <div className="navbar">
-    <div className="logo">Dashboard</div>
+    <div className="logo">Agents Dashboard</div>
     <div className="user-info">
       <div className="user-icon">&#128100;</div>
       <div className="user-name">{fullName}</div>
-      <div className="accountNo">{accountNumber}</div>
     </div>
   </div>
 );
@@ -17,38 +16,37 @@ const Sidebar = ({ onLogout }) => (
   <div className="sidebar">
     <div className="logo">Dashboard</div>
     <ul>
-      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/exchange">Exchange</a></li>
       <li><a href="/deposit">Deposit</a></li>
       <li><a href="/withdraw">Withdraw</a></li>
-      <li><a href="#transfer">Transfer</a></li>
-      <li><a href="#pay-bills">Pay Bills</a></li>
-      <li><a href="#profile">Profile</a></li>
+      <li><a href="/transfer">Transfer</a></li>
+      <li><a href="/paybills">PayBills</a></li>
+      <li><a href="/customer">Customers</a></li>
+      <li><a href="/profile">Profile</a></li>
       <li><a href="/" onClick={onLogout}>Logout</a></li>
     </ul>
   </div>
 );
 
-const Card = ({ currency, balance, onExchange }) => (
+const Card = ({ currency, balance }) => (
   <div className="card">
     <h3>{currency}</h3>
     <p>Balance: {balance.toFixed(2)}</p>
-    <button onClick={() => onExchange(currency)}>Exchange</button>
   </div>
 );
 
-const CurrencyCards = ({ balances, onExchange }) => (
+const CurrencyCards = ({ balances }) => (
   <div className="currency-cards">
-    <Card currency="Zambian Kwacha (ZMW)" balance={balances.zambianKwacha} onExchange={onExchange} />
-    <Card currency="USD Dollar (USD)" balance={balances.usDollar} onExchange={onExchange} />
-    <Card currency="Malawian Kwacha (MWK)" balance={balances.malawianKwacha} onExchange={onExchange} />
-    <Card currency="Zimbabwean Dollar (ZWL)" balance={balances.zimbabweanDollar} onExchange={onExchange} />
+    <Card currency="Zambian Kwacha (ZMW)" balance={balances.zambianKwacha} />
+    <Card currency="USD Dollar (USD)" balance={balances.usDollar} />
+    <Card currency="Malawian Kwacha (MWK)" balance={balances.malawianKwacha} />
+    <Card currency="Zimbabwean Dollar (ZWL)" balance={balances.zimbabweanDollar} />
   </div>
 );
 
 const TransactionHistory = () => (
   <div className="transaction-history">
     <h2>Transaction History</h2>
-  
     <table>
       <thead>
         <tr>
@@ -137,50 +135,9 @@ const Agent = () => {
       }
     };
 
-    if (userId) {
-      fetchUserData();
-      fetchAccountNumber();
-    }
+    fetchUserData();
+    fetchAccountNumber();
   }, [userId]);
-
-  const handleExchange = async (fromCurrency) => {
-    const toCurrency = prompt('Enter target currency (ZMW, USD, MWK, ZWL):');
-    const amount = parseFloat(prompt('Enter amount to exchange:'));
-
-    if (!amount || isNaN(amount) || amount <= 0) {
-      alert('Invalid amount.');
-      return;
-    }
-
-    const currencyMap = {
-      'Zambian Kwacha (ZMW)': 'zambianKwacha',
-      'USD Dollar (USD)': 'usDollar',
-      'Malawian Kwacha (MWK)': 'malawianKwacha',
-      'Zimbabwean Dollar (ZWL)': 'zimbabweanDollar'
-    };
-
-    if (!currencyMap[toCurrency]) {
-      alert('Invalid currency.');
-      return;
-    }
-
-    try {
-      const response = await wallet_backend.exchangeCurrency(userId, fromCurrency, toCurrency, amount);
-      if ('ok' in response) {
-        setBalances(prevBalances => ({
-          ...prevBalances,
-          [currencyMap[fromCurrency]]: prevBalances[currencyMap[fromCurrency]] - amount,
-          [currencyMap[toCurrency]]: prevBalances[currencyMap[toCurrency]] + response.ok,
-        }));
-        alert('Currency exchanged successfully.');
-      } else {
-        alert('Currency exchange failed.');
-      }
-    } catch (error) {
-      console.error('Error exchanging currency:', error);
-      alert('An error occurred while exchanging currency.');
-    }
-  };
 
   const handleLogout = () => {
     localStorage.removeItem('userId');
@@ -192,10 +149,9 @@ const Agent = () => {
     <div className="dashboard-container">
       <Sidebar onLogout={handleLogout} />
       <div className="main-content">
-        <Navbar fullName={fullName} 
-        accountNumber={accountNumber} />
+        <Navbar fullName={fullName} />
         <div className="dashboard-content">
-          <CurrencyCards balances={balances} onExchange={handleExchange} />
+          <CurrencyCards balances={balances} />
           <TransactionHistory />
         </div>
       </div>

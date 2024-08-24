@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { wallet_backend } from '../../../declarations/wallet_backend';
 import './Dashboard.css';
 
-const Navbar = ({ fullName, accountNumber }) => (
+const Navbar = ({ fullName }) => (
   <div className="navbar">
-    <div className="logo">Dashboard</div>
+    <div className="logo">Admin Dashboard</div>
     <div className="user-info">
       <div className="user-icon">&#128100;</div>
       <div className="user-name">{fullName}</div>
-      <div className="accountNo">{accountNumber}</div>
     </div>
   </div>
 );
@@ -17,12 +16,11 @@ const Sidebar = ({ onLogout }) => (
   <div className="sidebar">
     <div className="logo">Dashboard</div>
     <ul>
-      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/exchange">Exchange</a></li>
       <li><a href="/deposit">Deposit</a></li>
       <li><a href="/withdraw">Withdraw</a></li>
       <li><a href="/transfer">Transfer</a></li>
       <li><a href="/paybills">PayBills</a></li>
-      <li><a href="/exchange">Exchange</a></li>
       <li><a href="/agent">Agents</a></li>
       <li><a href="/customer">Customers</a></li>
       <li><a href="/profile">Profile</a></li>
@@ -31,7 +29,6 @@ const Sidebar = ({ onLogout }) => (
   </div>
 );
 
-// Card component for displaying currency balances without exchange button
 const Card = ({ currency, balance }) => (
   <div className="card">
     <h3>{currency}</h3>
@@ -39,7 +36,6 @@ const Card = ({ currency, balance }) => (
   </div>
 );
 
-// CurrencyCards component for displaying all currency cards
 const CurrencyCards = ({ balances }) => (
   <div className="currency-cards">
     <Card currency="Zambian Kwacha (ZMW)" balance={balances.zambianKwacha} />
@@ -48,6 +44,7 @@ const CurrencyCards = ({ balances }) => (
     <Card currency="Zimbabwean Dollar (ZWL)" balance={balances.zimbabweanDollar} />
   </div>
 );
+
 const TransactionHistory = () => (
   <div className="transaction-history">
     <h2>Transaction History</h2>
@@ -62,7 +59,6 @@ const TransactionHistory = () => (
         </tr>
       </thead>
       <tbody>
-        {/* Sample data, replace with dynamic data fetched from backend */}
         <tr>
           <td>2024-08-01</td>
           <td>Deposit</td>
@@ -140,185 +136,25 @@ const Dashboard = () => {
       }
     };
 
-    if (userId) {
-      fetchUserData();
-      fetchAccountNumber();
-    }
+    fetchUserData();
+    fetchAccountNumber();
   }, [userId]);
 
-  // Handle currency exchange
-  const handleExchange = async (fromCurrency) => {
-    const toCurrency = prompt('Enter target currency (ZMW, USD, MWK, ZWL):');
-    const amount = parseFloat(prompt('Enter amount to exchange:'));
-
-    if (!amount || isNaN(amount) || amount <= 0) {
-      alert('Invalid amount.');
-      return;
-    }
-
-    const currencyMap = {
-      ZMW: { ZambianKwacha: null },
-      USD: { USDollar: null },
-      MWK: { MalawianKwacha: null },
-      ZWL: { ZimbabweanDollar: null }
-    };
-  
-    if (!currencyMap[toCurrency]) {
-      alert('Invalid currency.');
-      return;
-    }
-
-    try {
-      const response = await wallet_backend.exchangeCurrency(userId, fromCurrency, toCurrency, amount);
-      if ('ok' in response) {
-        setBalances(prevBalances => ({
-          ...prevBalances,
-          [currencyMap[fromCurrency]]: prevBalances[currencyMap[fromCurrency]] - amount,
-          [currencyMap[toCurrency]]: prevBalances[currencyMap[toCurrency]] + response.ok,
-        }));
-        alert('Currency exchanged successfully.');
-      } else {
-        alert('Currency exchange failed.');
-      }
-    } catch (error) {
-      console.error('Error exchanging currency:', error);
-      alert('An error occurred while exchanging currency.');
-    }
-  };
-  
-  const handleDeposit = async () => {
-    const amount = parseFloat(prompt('Enter amount to deposit:'));
-    const currency = prompt('Enter currency (ZMW, USD, MWK, ZWL):');
-
-    if (!amount || isNaN(amount) || amount <= 0) {
-      alert('Invalid amount.');
-      return;
-    }
-
-    try {
-      const response = await wallet_backend.deposit(userId, amount, currency);
-      if ('ok' in response) {
-        setBalances(prevBalances => ({
-          ...prevBalances,
-          [currency]: prevBalances[currency] + amount,
-        }));
-        alert('Deposit successful.');
-      } else {
-        alert('Deposit failed.');
-      }
-    } catch (error) {
-      console.error('Error depositing:', error);
-      alert('An error occurred during deposit.');
-    }
-  };
-
-  const handleWithdraw = async () => {
-    const amount = parseFloat(prompt('Enter amount to withdraw:'));
-    const currency = prompt('Enter currency (ZMW, USD, MWK, ZWL):');
-
-    if (!amount || isNaN(amount) || amount <= 0) {
-      alert('Invalid amount.');
-      return;
-    }
-
-    try {
-      const response = await wallet_backend.withdraw(userId, amount, currency);
-      if ('ok' in response) {
-        setBalances(prevBalances => ({
-          ...prevBalances,
-          [currency]: prevBalances[currency] - amount,
-        }));
-        alert('Withdrawal successful.');
-      } else {
-        alert('Withdrawal failed.');
-      }
-    } catch (error) {
-      console.error('Error withdrawing:', error);
-      alert('An error occurred during withdrawal.');
-    }
-  };
-
-  const handleTransfer = async () => {
-    const recipientId = prompt('Enter recipient account ID:');
-    const amount = parseFloat(prompt('Enter amount to transfer:'));
-    const currency = prompt('Enter currency (ZMW, USD, MWK, ZWL):');
-
-    if (!recipientId) {
-      alert('Recipient account ID is required.');
-      return;
-    }
-
-    if (!amount || isNaN(amount) || amount <= 0) {
-      alert('Invalid amount.');
-      return;
-    }
-
-    try {
-      const response = await wallet_backend.transfer(userId, recipientId, amount, currency);
-      if ('ok' in response) {
-        setBalances(prevBalances => ({
-          ...prevBalances,
-          [currencyMap[currency]]: prevBalances[currencyMap[currency]] - amount,
-        }));
-        alert('Transfer successful.');
-      } else {
-        alert('Transfer failed.');
-      }
-    } catch (error) {
-      console.error('Error transferring:', error);
-      alert('An error occurred during the transfer.');
-    }
-  };
-  const handlePayBills = async () => {
-    const billType = prompt('Enter bill type (e.g., Electricity, Water, School):');
-    const amount = parseFloat(prompt('Enter amount to pay:'));
-    const currency = prompt('Enter currency (ZMW, USD, MWK, ZWL):');
-
-    if (!billType) {
-      alert('Bill type is required.');
-      return;
-    }
-
-    if (!amount || isNaN(amount) || amount <= 0) {
-      alert('Invalid amount.');
-      return;
-    }
-
-    try {
-      const response = await wallet_backend.payBills(userId, billType, amount, currency);
-      if ('ok' in response) {
-        setBalances(prevBalances => ({
-          ...prevBalances,
-          [currency]: prevBalances[currency] - amount,
-        }));
-        alert('Bill payment successful.');
-      } else {
-        alert('Bill payment failed.');
-      }
-    } catch (error) {
-      console.error('Error paying bills:', error);
-      alert('An error occurred while paying bills.');
-    }
-  };
   const handleLogout = () => {
     localStorage.removeItem('userId');
     localStorage.removeItem('fullName');
-    window.location.href = '/';
+    window.location.href = '/login';
   };
 
   return (
-    <div className="dashboard">
-      <Navbar fullName={fullName} accountNumber={accountNumber} />
+    <div className="dashboard-container">
       <Sidebar onLogout={handleLogout} />
       <div className="main-content">
-        <CurrencyCards balances={balances} onExchange={handleExchange} />
-        <div className="actions">
-          <button onClick={handleDeposit}>Deposit</button>
-          <button onClick={handleWithdraw}>Withdraw</button>
-          <button onClick={handleTransfer}>Transfer</button>
-          <button onClick={handlePayBills}>PayBills</button>
+        <Navbar fullName={fullName} />
+        <div className="dashboard-content">
+          <CurrencyCards balances={balances} />
+          <TransactionHistory />
         </div>
-        <TransactionHistory />
       </div>
     </div>
   );
