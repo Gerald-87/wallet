@@ -38,7 +38,7 @@ const CurrencyCards = ({ balances }) => (
     <Card currency="USD Dollar (USD)" balance={balances.usDollar} />
     <Card currency="Malawian Kwacha (MWK)" balance={balances.malawianKwacha} />
     <Card currency="Zimbabwean Dollar (ZWL)" balance={balances.zimbabweanDollar} />
-    <Card currency="Commisions" balance={balances.zimbabweanDollar} />
+    <Card currency="Gifts" balance={balances.zimbabweanDollar} />
   </div>
 );
 
