@@ -38,7 +38,7 @@ const Login = () => {
         } else if ("Agent" in role) {
           navigate("/agent");
         } else {
-          navigate("/");
+          setError("Unauthorized role");
         }
       } else {
         console.log("Login failed:", result.err);
