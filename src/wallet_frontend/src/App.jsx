@@ -10,6 +10,16 @@ import Withdraw from './components/Withdraw';
 import PayBills from './components/PayBills';
 import Transfer from './components/Transfer';
 import Exchange from './components/Exchange';
+import DepositAgent from './components/DepositAgent'; 
+import WithdrawAgent from './components/WithdrawAgent';
+import TransferAgent from './components/TransferAgent';
+import ExchangeAgent from './components/ExchangeAgent';
+import PayBillsAgent from './components/PayBillsAgent';
+import WithdrawCustomer from './components/WithdrawCustomer';
+import TransferCustomer from './components/TransferCustomer';
+import ExchangeCustomer from './components/ExchangeCustomer';
+import PayBillsCustomer from './components/PayBillsCustomer';
+
 
 // Helper function to check authentication
 const isAuthenticated = () => {
@@ -70,23 +80,59 @@ function App() {
     },
     {
       path: "/deposit",
-      element: <ProtectedRoute element={<Deposit />} allowedRoles={["Admin", "Agent"]} />,
+      element: <ProtectedRoute element={<Deposit />} allowedRoles={["Admin"]} />,
     },
     {
       path: "/withdraw",
-      element: <ProtectedRoute element={<Withdraw />} allowedRoles={["Admin", "Agent", "Customer"]} />,
+      element: <ProtectedRoute element={<Withdraw />} allowedRoles={["Admin"]} />,
     },
     {
       path: "/paybills",
-      element: <ProtectedRoute element={<PayBills />} allowedRoles={["Admin", "Agent", "Customer"]} />,
+      element: <ProtectedRoute element={<PayBills />} allowedRoles={["Admin"]} />,
     },
     {
       path: "/transfer",
-      element: <ProtectedRoute element={<Transfer />} allowedRoles={["Admin", "Agent", "Customer"]} />,
+      element: <ProtectedRoute element={<Transfer />} allowedRoles={["Admin"]} />,
     },
     {
       path: "/exchange",
-      element: <ProtectedRoute element={<Exchange />} allowedRoles={["Admin", "Agent", "Customer"]} />,
+      element: <ProtectedRoute element={<Exchange />} allowedRoles={["Admin"]} />,
+    },
+    {
+      path: "/depositagent",
+      element: <ProtectedRoute element={<DepositAgent />} allowedRoles={["Agent"]} />,
+    },
+    {
+      path: "/withdrawagent",
+      element: <ProtectedRoute element={<WithdrawAgent />} allowedRoles={["Agent"]} />,
+    },
+    {
+      path: "/transferagent",
+      element: <ProtectedRoute element={<TransferAgent />} allowedRoles={["Agent"]} />,
+    },
+    {
+      path: "/exchangeagent",
+      element: <ProtectedRoute element={<ExchangeAgent />} allowedRoles={["Agent"]} />,
+    },
+    {
+      path: "/paybillsagent",
+      element: <ProtectedRoute element={<PayBillsAgent />} allowedRoles={["Agent"]} />,
+    },
+    {
+      path: "/withdrawcustomer",
+      element: <ProtectedRoute element={<WithdrawCustomer />} allowedRoles={["Customer"]} />,
+    },
+    {
+      path: "/transfercustomer",
+      element: <ProtectedRoute element={<TransferCustomer />} allowedRoles={["Customer"]} />,
+    },
+    {
+      path: "/exchangecustomer",
+      element: <ProtectedRoute element={<ExchangeCustomer />} allowedRoles={["Customer"]} />,
+    },
+    {
+      path: "/paybillscustomer",
+      element: <ProtectedRoute element={<PayBillsCustomer />} allowedRoles={["Customer"]} />,
     },
     {
       path: "*",

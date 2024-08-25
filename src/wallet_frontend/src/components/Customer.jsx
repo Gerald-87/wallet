@@ -16,10 +16,10 @@ const Sidebar = ({ onLogout }) => (
   <div className="sidebar">
     <div className="logo">Dashboard</div>
     <ul>
-      <li><a href="/exchange">Exchange</a></li>
-      <li><a href="/withdraw">Withdraw</a></li>
-      <li><a href="/transfer">Transfer</a></li>
-      <li><a href="/paybills">PayBills</a></li>
+      <li><a href="/exchangecustomer">Exchange</a></li>
+      <li><a href="/withdrawcustomer">Withdraw</a></li>
+      <li><a href="/transfercustomer">Transfer</a></li>
+      <li><a href="/paybillscustomer">PayBills</a></li>
       <li><a href="/" onClick={onLogout}>Logout</a></li>
     </ul>
   </div>
